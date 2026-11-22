@@ -1,14 +1,19 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Leave a review | Caresitters</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Review for a Caresitters member</title>
 <style>
 body{margin:0;font-family:-apple-system,system-ui,sans-serif;color:#2D2A35;background:#fff}
+header{padding:16px 22px;border-bottom:1px solid #F6CBD3;background:#fff}header img{display:block;margin:0 auto}.bun{display:block;width:92px;margin:6px auto 0}.for{text-align:center;background:#F6CBD3;color:#2D2A35;font-weight:700;border-radius:999px;padding:10px 16px;margin:10px 0 18px}.ft{text-align:center;font-size:13px;margin-top:28px}
 main{max-width:440px;margin:0 auto;padding:28px 22px}
 h1{font-size:26px;margin:0 0 8px}p{line-height:1.45;color:#5b5766}
 input,textarea{width:100%;box-sizing:border-box;font:inherit;padding:14px;border:1.5px solid #F6CBD3;border-radius:14px;margin:6px 0 14px}
 button{width:100%;font:inherit;font-weight:700;padding:15px;border:0;border-radius:999px;background:#C2345B;color:#fff;margin-top:4px}
 button:disabled{opacity:.5}.stars{display:flex;gap:8px;margin:8px 0 16px}.stars span{font-size:40px;cursor:pointer;color:#F6CBD3;line-height:1}.stars span.on{color:#F6D67C}
 .err{color:#C2345B;font-weight:600}.box{background:#F6CBD3;border-radius:16px;padding:14px 16px;margin:14px 0}
-</style></head><body><main>
+</style></head><body><header><img src="logo.png" alt="Caresitters" height="34"></header>
+<main>
+<img src="bunny.png" alt="" class="bun">
+<div class="for" id="for"></div>
 <h1 id="h">Leave a review</h1><p id="sub"></p><div id="app"></div>
+<p class="ft">Caresitters. Trusted care, verified reviews.</p>
 </main>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -16,14 +21,14 @@ import {getAuth,isSignInWithEmailLink,signInWithEmailLink,sendSignInLinkToEmail,
 import {getFirestore,doc,setDoc,getDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyDbi4vqhN6I7Zz7_-6-ZQSZzd3MnQiYBCE",authDomain:"caresits-812a0.firebaseapp.com",projectId:"caresits-812a0",appId:"1:908064912971:web:88858e5fa8751f66b23fce"});
 const auth=getAuth(app),db=getFirestore(app);
-const q=new URLSearchParams(location.search),u=q.get("u"),t=q.get("t");
+const q=new URLSearchParams(location.search),u=q.get("u"),t=q.get("t"),who=(q.get("n")||"").slice(0,40);
 const $=id=>document.getElementById(id),A=$("app"),H=$("h"),S=$("sub");
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function msg(x,e){const m=$("m");if(m){m.className=e?"err":"";m.textContent=x}}
 if(!u||!t){H.textContent="Link not valid";S.textContent="Ask the person to send you a new review link."}
-else start();
+else {$("for").textContent=who?"Review for "+who:"Review for a Caresitters member";start();}
 async function start(){
- S.textContent="Someone you worked with asked for a short review. It takes one minute. First confirm your email, so the review is marked verified.";
+ S.textContent=(who||"Someone you worked with")+" asked for a short review. It takes one minute. First confirm your email, so the review is marked verified.";
  if(isSignInWithEmailLink(auth,location.href)){
   let em=localStorage.getItem("rvEmail");
   if(!em){em=prompt("Type your email to finish");}
@@ -39,7 +44,7 @@ function emailStep(err){
   }catch(e){$("go").disabled=false;msg("Could not send: "+(e.code||e.message),1)}};
 }
 function form(){
- H.textContent="Your review";S.textContent="Be honest and kind. Do not write phone numbers or emails.";
+ H.textContent="Your review"+(who?" of "+who:"");S.textContent="Be honest and kind. Do not write phone numbers or emails.";
  let n=0;
  A.innerHTML=`<label>Stars</label><div class="stars" id="st">${[1,2,3,4,5].map(i=>`<span data-i="${i}">&#9733;</span>`).join("")}</div>
  <label>Your first name</label><input id="nm" maxlength="40" placeholder="First name">
